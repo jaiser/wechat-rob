@@ -10,9 +10,46 @@ server:
 #mysql
 spring:
   application:
-    name: wechat-rob
+    name: base-web
   servlet:
     multipart:
       maxFileSize: 30MB
       maxRequestSize: 30MB
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${database_ip}:${database_port}/${database_name}}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: ${database_username}
+    password: ${database_password}
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  redis:
+    database: 1
+    host: ${redis_ip}
+    port: ${redis_port}
+    password: ${redis_password}
+    timeout: 5000  #
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+  profiles:
+    active: dev
 
