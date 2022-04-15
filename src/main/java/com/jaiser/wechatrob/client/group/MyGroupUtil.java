@@ -143,7 +143,7 @@ public class MyGroupUtil {
 
         logger.info("更新对象key：《{}》，回复key：《{}》", msgList[0], msgList[1]);
         AutoReplyD autoReplyD = autoReplyService.selectOneByKey(msgList[1]);
-        if (autoReplyD != null) {
+        if (autoReplyD == null) {
             messages = "不存在该回复，请学习！";
         } else {
             AutoReplyD vo = new AutoReplyD();
