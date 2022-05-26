@@ -2,6 +2,7 @@ package com.jaiser.wechatrob.client;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jaiser.wechatrob.client.group.MyGroupUtil;
+import com.jaiser.wechatrob.client.group.QueueList;
 import com.jaiser.wechatrob.domain.WXMsg;
 import com.jaiser.wechatrob.domain.WXRecMsg;
 import com.jaiser.wechatrob.enums.GroupOperateEnum;
@@ -121,7 +122,11 @@ public class MyWebSocketClient extends WebSocketClient {
             } else if (GroupOperateEnum.UPDATE_ENTRY.getValue().equals(msgList[0])) {
                 message = myGroupUtil.updateEntry(wxRecMsg);
             }else {
-                message = myGroupUtil.replyEntry(wxRecMsg);
+                if (isRepeat(msg)) {
+                    message = wxRecMsg.getContent();
+                }else {
+                    message = myGroupUtil.replyEntry(wxRecMsg);
+                }
             }
             if (StringUtils.isNotBlank(message)) {
                 sendTextMsg(wxRecMsg.getWxid(), message);
@@ -248,5 +253,24 @@ public class MyWebSocketClient extends WebSocketClient {
         log.info("发送获取所有群成员列表请求 --> " + json);
         sendMsg(json);
     }
+
+
+    // 缓存聊天队列
+    QueueList<String> queueList = new QueueList(2);
+
+    private String lastestRepeat = null;
+
+    private Boolean isRepeat(String msg) {
+        if (StringUtils.isBlank(msg)) {
+            return false;
+        }
+        queueList.enQueue(msg);
+        if (queueList.isFull() && queueList.isCongruent() && !msg.equals(lastestRepeat)) {
+            lastestRepeat = msg;
+            return true;
+        }
+        return false;
+    }
+
 
 }
